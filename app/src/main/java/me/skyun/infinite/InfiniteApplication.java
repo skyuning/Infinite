@@ -18,6 +18,6 @@ public class InfiniteApplication extends Application {
         super.onCreate();
         ImageViewEx.setImageHost(Conf.IMAGE_HOST);
         FlowManager.init(this);
-        RetrofitUtils.init(getApplicationContext(), Conf.Host);
+        RetrofitUtils.init(getApplicationContext(), Conf.sHost);
     }
 }

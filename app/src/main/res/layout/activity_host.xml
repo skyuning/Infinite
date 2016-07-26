@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="15dp"
+    tools:context="me.skyun.test.HostActivity">
+
+    <EditText
+        android:id="@+id/host_et_host"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/block_bg"
+        android:padding="15dp"
+        android:textColor="@android:color/white"
+        tools:text="http://192.168.2.241:8080" />
+
+    <Button
+        android:id="@+id/host_btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@color/button_bg"
+        android:text="确定" />
+
+</LinearLayout>

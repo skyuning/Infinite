@@ -12,6 +12,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".user.LoginActivity">
 
+    <TextView
+        android:id="@+id/host"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:padding="10dp"
+        android:text="host" />
+
     <me.skyun.widget.ImageViewEx
         android:id="@+id/login_iv_avatar"
         android:layout_width="60dp"

@@ -12,6 +12,7 @@ import me.skyun.infinite.MainActivity;
 import me.skyun.infinite.R;
 import me.skyun.infinite.global.GlobalPref;
 import me.skyun.infinite.global.RetrofitUtils;
+import me.skyun.test.HostActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,6 +23,7 @@ public class LoginActivity extends BaseActivity {
     private EditText mUsernameView = findViewByIdPre("mUsernameView", R.id.login_et_username);
     private EditText mPasswordView = findViewByIdPre("mPasswordView", R.id.login_et_password);
     private Button mSubmitBtn = findViewByIdPre("mSubmitBtn", R.id.login_btn_submit);
+    private View mHostView = findViewByIdPre("mHostView", R.id.host);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,13 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 onSubmitClick();
+            }
+        });
+
+        mHostView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, HostActivity.class));
             }
         });
     }
