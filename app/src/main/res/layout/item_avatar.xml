@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@drawable/selector_white_gray"
+    android:orientation="vertical">
+
+    <me.skyun.widget.ImageViewEx
+        android:id="@+id/avatar"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        tools:src="@drawable/default_avatar" />
+
+</FrameLayout>

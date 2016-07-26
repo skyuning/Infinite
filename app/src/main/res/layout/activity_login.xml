@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".user.LoginActivity">
+
+    <me.skyun.widget.ImageViewEx
+        android:id="@+id/login_iv_avatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/default_avatar"
+        app:oval="true" />
+
+    <EditText
+        android:id="@+id/login_et_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:background="#44cccccc"
+        android:hint="用户名"
+        android:padding="10dp"
+        android:text="linyun"
+        android:textColorHint="@color/text_hint"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/login_et_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="#44cccccc"
+        android:hint="密码"
+        android:inputType="textPassword"
+        android:padding="10dp"
+        android:text="aaa"
+        android:textColorHint="@color/text_hint"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/login_btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="#333"
+        android:text="登录" />
+
+</LinearLayout>

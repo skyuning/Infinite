@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ImageViewEx">
+        <attr name="square" format="boolean" />
+        <attr name="oval" format="boolean" />
+        <attr name="keepHwRatio" format="boolean" />
+    </declare-styleable>
+</resources>

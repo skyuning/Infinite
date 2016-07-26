@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <me.skyun.widget.ImageViewEx
+        android:id="@+id/user_iv_banner"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="#fac"
+        android:scaleType="centerCrop"
+        android:src="@drawable/dandelion" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true" />
+
+        <EditText
+            android:id="@+id/user_et_role_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/divider"
+            android:background="@android:color/transparent"
+            android:hint="role name"
+            android:padding="10dp"
+            android:textColor="@color/text_main"
+            android:textColorHint="@color/text_hint"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/user_et_role_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/divider"
+            android:background="@android:color/transparent"
+            android:hint="age"
+            android:inputType="number"
+            android:padding="10dp"
+            android:textColor="@color/text_main"
+            android:textColorHint="@color/text_hint"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/user_tv_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_et_role_name"
+            android:layout_marginTop="10dp"
+            android:background="@color/button_bg"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="创建"
+            android:textColor="@color/text_main"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/user_list_roles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:divider="@drawable/divider_horizon"
+        android:dividerHeight="0.5dp"
+        tools:listitem="@layout/item_role" />
+
+</LinearLayout>
