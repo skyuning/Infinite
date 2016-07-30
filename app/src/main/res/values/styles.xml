@@ -23,4 +23,18 @@
     <!--在Android 4.4之前的版本上运行，直接跟随系统主题-->
     <style name="AppTheme" parent="AppThemeNoActionBar"></style>
 
+
+    <style name="DialogTheme" parent="android:Theme.Dialog">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+    </style>
+    <style name="DialogTheme.Fix">
+        <item name="android:windowIsFloating">false</item>
+    </style>
 </resources>

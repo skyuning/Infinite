@@ -60,6 +60,6 @@ public class StartupActivity extends AppCompatActivity {
                 }
                 finish();
             }
-        }, 1000);
+        }, 200);
     }
 }

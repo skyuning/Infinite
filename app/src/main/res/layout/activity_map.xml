@@ -17,25 +17,24 @@
         tools:layout_marginBottom="45dp"
         tools:layout_marginTop="25dp" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/map_view_floor"
-        android:layout_marginLeft="300px"
-        android:layout_marginTop="300px"
-        android:layout_toEndOf="@+id/test"
-        android:layout_toRightOf="@+id/test"
-        android:src="@drawable/bothy" />
-
-    <Button
-        android:id="@+id/test"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@color/button_bg"
-        android:text="test"
-        android:visibility="gone"
-        tools:layout_marginTop="35dp" />
+        android:layout_height="45dp"
+        tools:layout_marginTop="25dp">
+
+        <Button
+            android:id="@+id/map_btn_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/button_bg"
+            android:text="编辑" />
+
+        <Button
+            android:id="@+id/map_btn_my_goods"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/button_bg"
+            android:text="我的物品" />
+    </LinearLayout>
 
 </RelativeLayout>

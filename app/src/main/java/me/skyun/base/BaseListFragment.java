@@ -10,7 +10,7 @@
 
 package me.skyun.base;
 
-import android.app.Fragment;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,7 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public abstract class BaseListFragment<ITEM, RESULT> extends Fragment implements
+public abstract class BaseListFragment<ITEM, RESULT> extends DialogFragment implements
         AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener, Callback<RESULT> {
 
@@ -231,6 +231,10 @@ public abstract class BaseListFragment<ITEM, RESULT> extends Fragment implements
         public StatusManager(View contentView) {
             mContentView = contentView;
             mViewBinder.bind(this, mContentView);
+        }
+
+        public View getContentView() {
+            return mContentView;
         }
 
         public void setEmptyMsg(String emptyMsg) {

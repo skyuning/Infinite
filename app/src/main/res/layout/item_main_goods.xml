@@ -2,15 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#88ffaacc"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="10dp">
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    tools:layout_marginTop="30dp">
+
+    <ImageView
+        android:id="@+id/goods_tv_icon"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:scaleType="fitStart"
+        tools:src="@drawable/bothy" />
 
     <TextView
         android:id="@+id/goods_tv_name"
-        android:layout_width="100dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        tools:text="野菜野菜野菜野" />
+        android:singleLine="true"
+        tools:text="茅屋" />
 
     <TextView
         android:id="@+id/goods_tv_amount"
@@ -23,7 +35,6 @@
         android:id="@+id/goods_tv_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:text="食物" />
 
 </LinearLayout>
