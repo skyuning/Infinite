@@ -9,11 +9,14 @@ import android.content.SharedPreferences;
 public class GlobalPref {
 
     public static final String SETTINGS = "settings";
-    public static final String USER_ID = "uid";
 
     public static void set(Context context, String key, String value) {
         SharedPreferences preferences = context.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE);
-        preferences.edit().putString(key, value).apply();
+        if (value != null) {
+            preferences.edit().putString(key, value).apply();
+        } else {
+            preferences.edit().remove(key).apply();
+        }
     }
 
     public static String get(Context context, String key) {

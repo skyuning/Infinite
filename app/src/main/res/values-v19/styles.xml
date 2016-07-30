@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ImageTranslucentTheme" parent="ImageTranslucentThemeBase">
+    <style name="AppTheme" parent="AppThemeNoActionBar">
         <item name="colorPrimary">@android:color/transparent</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="android:windowTranslucentStatus">true</item>

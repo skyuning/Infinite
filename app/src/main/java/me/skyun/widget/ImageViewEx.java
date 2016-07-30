@@ -40,7 +40,7 @@ public class ImageViewEx extends ImageView {
     /**
      * 图片源
      */
-    private int mPlaceHolderId;
+    private int mPlaceHolderId = R.drawable.avatar_placeholder;
     private String mRemoteUrl;
 
     public static void setImageHost(String imageHost) {

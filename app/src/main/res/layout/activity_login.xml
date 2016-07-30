@@ -36,7 +36,7 @@
         android:background="#44cccccc"
         android:hint="用户名"
         android:padding="10dp"
-        android:text="linyun"
+        android:text="skyun"
         android:textColorHint="@color/text_hint"
         android:textSize="18sp" />
 

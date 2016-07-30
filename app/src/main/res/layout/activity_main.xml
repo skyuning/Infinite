@@ -1,16 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="10dp">
 
     <me.skyun.widget.ImageViewEx
         android:id="@+id/main_iv_avatar"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_margin="10dp"
         app:oval="true"
         tools:src="@drawable/avatar_placeholder" />
 
-</FrameLayout>
+    <Button
+        android:id="@+id/main_btn_logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:background="@color/button_bg"
+        android:padding="15dp"
+        android:text="logout"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/main_iv_map"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:layout_below="@id/main_iv_avatar"
+        android:layout_marginTop="10dp"
+        android:background="@color/block_bg"
+        android:contentDescription="地图" />
+
+    <fragment
+        android:id="@+id/main_fragment_goods"
+        android:name="me.skyun.infinite.main.GoodsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/main_iv_map"
+        android:layout_marginTop="10dp"
+        tools:layout="@layout/fragment_base_list" />
+</RelativeLayout>

@@ -1,10 +1,14 @@
-package me.skyun.infinite;
+package me.skyun.infinite.main;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import me.skyun.base.BaseActivity;
+import me.skyun.infinite.MapActivity;
+import me.skyun.infinite.R;
 import me.skyun.infinite.global.RetrofitUtils;
 import me.skyun.infinite.global.SimpleResponse;
 import me.skyun.infinite.user.AvatarsPopup;
@@ -22,33 +26,40 @@ import retrofit2.Response;
 public class MainActivity extends BaseActivity {
 
     private UserApi mUserApi = RetrofitUtils.getInstance().create(UserApi.class);
-
-    private ImageViewEx mAvatarView = findViewByIdPre("mAvatarView", R.id.main_iv_avatar);
+    private ImageViewEx mAvatarView = mViewBinder.add("mAvatarView", R.id.main_iv_avatar);
+    private ImageView mMapEntry = mViewBinder.add("mMapEntry", R.id.main_iv_map);
+    private Button mLogoutBtn = mViewBinder.add("mLogoutBtn", R.id.main_btn_logout);
+    private User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mAvatarView.setPlaceHolderId(R.drawable.avatar_placeholder);
-
-        RetrofitUtils.enqueueCall(this, mUserApi.getUser(), new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                mAvatarView.setRemoteUrl(response.body().avatar);
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                finish();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
-            }
-        });
+        mUser = User.fromPref(this);
+        mAvatarView.setRemoteUrl(mUser.avatar);
 
         mAvatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onAvatarClick();
+            }
+        });
+
+        mMapEntry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, MapActivity.class));
+            }
+        });
+
+        mLogoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User.logout(v.getContext());
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                finish();
             }
         });
     }

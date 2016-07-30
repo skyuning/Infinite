@@ -3,10 +3,14 @@ package me.skyun.infinite.global;
 import android.app.ProgressDialog;
 import android.content.Context;
 
+import com.google.gson.GsonBuilder;
+
 import junit.framework.Assert;
 
 import java.io.IOException;
 
+import me.skyun.infinite.user.User;
+import me.skyun.network.NanoConvertorFactory;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,8 +39,11 @@ public class RetrofitUtils {
         Interceptor myInterceptor = new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
-                String uid = GlobalPref.get(context, GlobalPref.USER_ID);
-                Request request = chain.request().newBuilder().addHeader("Cookie", "uid=" + uid).build();
+                Request request = chain.request();
+                User user = User.fromPref(context);
+                if (user != null) {
+                    request.newBuilder().addHeader("Cookie", "uid=" + user.id).build();
+                }
                 return chain.proceed(request);
             }
         };
@@ -49,7 +56,8 @@ public class RetrofitUtils {
         sRetrofit = new Retrofit.Builder()
                 .client(client)
                 .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setLenient().create()))
+                .addConverterFactory(new NanoConvertorFactory())
                 .build();
 
         return sRetrofit;

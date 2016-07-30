@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -17,8 +16,9 @@ import com.squareup.picasso.Target;
 import java.util.Locale;
 
 import me.skyun.infinite.global.Conf;
-import me.skyun.infinite.global.GlobalPref;
+import me.skyun.infinite.main.MainActivity;
 import me.skyun.infinite.user.LoginActivity;
+import me.skyun.infinite.user.User;
 import me.skyun.utils.Utils;
 
 /**
@@ -52,8 +52,8 @@ public class StartupActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                String uid = GlobalPref.get(StartupActivity.this, "uid");
-                if (TextUtils.isEmpty(uid)) {
+                User user = User.fromPref(StartupActivity.this);
+                if (user == null) {
                     startActivity(new Intent(StartupActivity.this, LoginActivity.class));
                 } else {
                     startActivity(new Intent(StartupActivity.this, MainActivity.class));

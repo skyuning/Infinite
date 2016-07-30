@@ -1,0 +1,16 @@
+syntax = "proto2";
+option java_package = "me.skyun";
+
+message GoodsType {
+    required string id = 1;
+    required string name = 2;
+}
+
+message Goods {
+    required string id = 1;
+    required int32 amount = 2;
+    required GoodsType type = 3;
+    optional string name = 4;
+    required string user = 5;
+}
+

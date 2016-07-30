@@ -1,26 +1,26 @@
 <resources>
 
-    <!-- Base application theme. --><style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Base application theme. --><style name="AppThemeDarkActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
     <!-- Customize your theme here. -->
     <item name="colorPrimary">@color/block_bg</item>
-    <item name="android:textColor">@android:color/white</item>
     <item name="colorPrimaryDark">@color/block_bg</item>
     <item name="colorAccent">@color/colorAccent</item>
+    <item name="android:textColor">@android:color/white</item>
     <item name="android:textSize">18sp</item>
     <item name="android:windowBackground">@color/activity_bg</item>
 </style>
 
-    <style name="ImageTranslucentThemeBase" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppThemeNoActionBar" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/block_bg</item>
-        <item name="android:textColor">@android:color/white</item>
         <item name="colorPrimaryDark">@color/block_bg</item>
-        <item name="android:fitsSystemWindows">true</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">18sp</item>
+        <item name="android:fitsSystemWindows">true</item>
         <item name="android:windowBackground">@color/activity_bg</item>
     </style>
 
     <!--在Android 4.4之前的版本上运行，直接跟随系统主题-->
-    <style name="ImageTranslucentTheme" parent="ImageTranslucentThemeBase"></style>
+    <style name="AppTheme" parent="AppThemeNoActionBar"></style>
 
 </resources>

@@ -1,5 +1,8 @@
 package me.skyun.infinite.user;
 
+import java.util.List;
+
+import me.skyun.IDL;
 import me.skyun.infinite.global.SimpleResponse;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -20,6 +23,9 @@ public interface UserApi {
     Call<User> login(@Field("username") String username, @Field("password") String password);
 
     @FormUrlEncoded
-    @POST("/user/set_avatar")
+    @POST("/user/avatar")
     Call<SimpleResponse> setAvatar(@Field("avatar") String avatar);
+
+    @GET("/user/goods")
+    Call<List<IDL.Goods>> getGoods();
 }

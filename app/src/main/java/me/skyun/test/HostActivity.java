@@ -14,8 +14,8 @@ import me.skyun.infinite.global.RetrofitUtils;
 
 public class HostActivity extends BaseActivity {
 
-    private EditText mHostView = findViewByIdPre("mHostView", R.id.host_et_host);
-    private Button mOkBtn = findViewByIdPre("mOkBtn", R.id.host_btn_ok);
+    private EditText mHostView = mViewBinder.add("mHostView", R.id.host_et_host);
+    private Button mOkBtn = mViewBinder.add("mOkBtn", R.id.host_btn_ok);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

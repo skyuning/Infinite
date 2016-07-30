@@ -5,4 +5,10 @@
         <attr name="oval" format="boolean" />
         <attr name="keepHwRatio" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="MapView">
+        <attr name="shader" format="reference" />
+        <attr name="xMeter" format="integer" />
+        <attr name="yMeter" format="integer" />
+    </declare-styleable>
 </resources>
