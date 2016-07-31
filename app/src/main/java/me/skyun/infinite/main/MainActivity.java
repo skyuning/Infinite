@@ -67,20 +67,6 @@ public class MainActivity extends BaseActivity {
                 finish();
             }
         });
-
-        Takt.stock(getApplication())
-                .seat(Seat.RIGHT_CENTER)
-                .interval(250)
-                .color(Color.WHITE)
-                .size(14f)
-                .alpha(.5f)
-                .listener(new Audience() {
-                    @Override
-                    public void heartbeat(double fps) {
-                        Log.d("fps", "" + fps);
-                    }
-                })
-                .play();
     }
 
     private void onAvatarClick() {

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -57,6 +58,15 @@ public class MapView extends RelativeLayout {
 
     public void setCurItem(MapItem curItem) {
         mCurItem = curItem;
+        invalidate();
+    }
+
+    public void putCurItem() {
+        if (mCurItem != null) {
+            mMapItems.add(mCurItem);
+            mCurItem = null;
+            invalidate();
+        }
     }
 
     public boolean isEditingMap() {
@@ -155,12 +165,21 @@ public class MapView extends RelativeLayout {
 
         // draw cur item
         if (mCurItem != null) {
-            Rect curItemShowingRect = new Rect(drawingRect);
-            curItemShowingRect.inset(drawingRect.width() / 2, drawingRect.height() / 2);
+            RectF tempRect = new RectF(drawingRect);
+            tempRect.inset(tempRect.width() / 2, tempRect.height() / 2); // 屏幕中点
+
+            Utils.getInvertMatrix(mMatrix).mapRect(tempRect); // 当前地图中点
+
             Rect curItemRawRect = mCurItem.getRect();
-            curItemShowingRect.inset(-curItemRawRect.width() / 2, -curItemRawRect.height() / 2);
+            tempRect.inset(-curItemRawRect.width() / 2, -curItemRawRect.height() / 2); // 当前地图居中的矩形
+
+            Point brickLeftTop = getBrickLeftTop((int) tempRect.left, (int) tempRect.top);
+            tempRect.offsetTo(brickLeftTop.x, brickLeftTop.y); // 要显示的位置
+
             Drawable curItemDrawable = mCurItem.getDrawable(getContext());
-            curItemDrawable.setBounds(curItemShowingRect);
+            curItemDrawable.setColorFilter(Color.RED, PorterDuff.Mode.LIGHTEN);
+            tempRect.roundOut(mCurItem.getRect());
+            curItemDrawable.setBounds(mCurItem.getRect());
             curItemDrawable.draw(canvas);
         }
 
@@ -194,16 +213,10 @@ public class MapView extends RelativeLayout {
             float[] rawPoint = new float[2];
             Utils.getInvertMatrix(mMatrix).mapPoints(rawPoint, transformedPoint);
 
-            rawPoint[0] -= rawPoint[0] % INTRINSIC_BRICK_PIXELS;
-            rawPoint[1] -= rawPoint[1] % INTRINSIC_BRICK_PIXELS;
-            if (rawPoint[0] < 0) {
-                rawPoint[0] -= INTRINSIC_BRICK_PIXELS;
-            }
-            if (rawPoint[1] < 0) {
-                rawPoint[1] -= INTRINSIC_BRICK_PIXELS;
-            }
+            Point brickLeftTop = getBrickLeftTop((int) rawPoint[0], (int) rawPoint[1]);
+
             mCurBrick = new Rect(0, 0, INTRINSIC_BRICK_PIXELS, INTRINSIC_BRICK_PIXELS);
-            mCurBrick.offset((int) rawPoint[0], (int) rawPoint[1]);
+            mCurBrick.offset(brickLeftTop.x, brickLeftTop.y);
 
             playSoundEffect(SoundEffectConstants.CLICK);
 
@@ -251,8 +264,10 @@ public class MapView extends RelativeLayout {
     private class MapScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
+            float[] focusPoint =
+                    new float[]{detector.getFocusX() + getScrollX(), detector.getFocusY() + getScrollY()};
             float scale = detector.getScaleFactor();
-            mMatrix.postScale(scale, scale);
+            mMatrix.postScale(scale, scale, focusPoint[0], focusPoint[1]);
             return true;
         }
     }
@@ -267,23 +282,18 @@ public class MapView extends RelativeLayout {
         if (!mOnGestureListener.onScroll(null, null, dx, dy)) {
             mScroller.forceFinished(true);
         }
+    }
 
-//        Rect scrollBound = new Rect(mBounds); // 可以scroll的范围
-//        scrollBound.offset(-getWidth() / 2, -getHeight() / 2);
-//
-//        if (x < scrollBound.left) {
-//            x = scrollBound.left;
-//        } else if (x > scrollBound.right) {
-//            x = scrollBound.right;
-//        }
-//        if (y < scrollBound.top) {
-//            y = scrollBound.top;
-//        } else if (y > scrollBound.bottom) {
-//            y = scrollBound.bottom;
-//        }
-//        scrollTo(x, y);
-//
-//        invalidate();
+    private Point getBrickLeftTop(int x, int y) {
+        x -= x % INTRINSIC_BRICK_PIXELS;
+        y -= y % INTRINSIC_BRICK_PIXELS;
+        if (x < 0) {
+            x -= INTRINSIC_BRICK_PIXELS;
+        }
+        if (y < 0) {
+            y -= INTRINSIC_BRICK_PIXELS;
+        }
+        return new Point(x, y);
     }
 }
 

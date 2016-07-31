@@ -1,11 +1,9 @@
 package me.skyun.infinite;
 
 import android.app.Application;
-import android.graphics.Color;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 
-import jp.wasabeef.takt.Seat;
 import jp.wasabeef.takt.Takt;
 import me.skyun.infinite.global.Conf;
 import me.skyun.infinite.global.RetrofitUtils;

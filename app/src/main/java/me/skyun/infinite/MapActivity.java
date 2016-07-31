@@ -19,8 +19,7 @@ public class MapActivity extends BaseActivity {
     private MapView mMapView = mViewBinder.add("mMapView", R.id.map_view);
     private Button mEditBtn = mViewBinder.add("mEditBtn", R.id.map_btn_edit);
     private Button mMyGoodsBtn = mViewBinder.add("mMyGoodsBtn", R.id.map_btn_my_goods);
-    private EditText mScaleView = mViewBinder.add("mScaleView", R.id.map_et_scale);
-    private Button mScaleBtn = mViewBinder.add("mScaleBtn", R.id.map_btn_scale);
+    private Button mPutItemBtn = mViewBinder.add("mPutItemBtn", R.id.map_btn_put_item);
     private User mUser;
 
     @Override
@@ -54,6 +53,7 @@ public class MapActivity extends BaseActivity {
                 fragment.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        fragment.dismiss();
                         IDL.Goods goods = fragment.getAdapter().getItem(position);
                         onGoodsClick(goods);
                     }
@@ -61,11 +61,10 @@ public class MapActivity extends BaseActivity {
             }
         });
 
-        mScaleBtn.setOnClickListener(new View.OnClickListener() {
+        mPutItemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                float scale = Float.valueOf(mScaleView.getText().toString());
-                mMapView.setMapScale(scale, mMapView.getWidth(), mMapView.getHeight());
+                mMapView.putCurItem();
             }
         });
     }
