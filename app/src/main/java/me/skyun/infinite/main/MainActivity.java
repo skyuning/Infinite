@@ -1,11 +1,16 @@
 package me.skyun.infinite.main;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import jp.wasabeef.takt.Audience;
+import jp.wasabeef.takt.Seat;
+import jp.wasabeef.takt.Takt;
 import me.skyun.base.BaseActivity;
 import me.skyun.infinite.MapActivity;
 import me.skyun.infinite.R;
@@ -62,6 +67,20 @@ public class MainActivity extends BaseActivity {
                 finish();
             }
         });
+
+        Takt.stock(getApplication())
+                .seat(Seat.RIGHT_CENTER)
+                .interval(250)
+                .color(Color.WHITE)
+                .size(14f)
+                .alpha(.5f)
+                .listener(new Audience() {
+                    @Override
+                    public void heartbeat(double fps) {
+                        Log.d("fps", "" + fps);
+                    }
+                })
+                .play();
     }
 
     private void onAvatarClick() {

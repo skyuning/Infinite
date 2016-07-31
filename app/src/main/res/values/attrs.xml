@@ -8,7 +8,7 @@
 
     <declare-styleable name="MapView">
         <attr name="shader" format="reference" />
-        <attr name="xMeter" format="integer" />
-        <attr name="yMeter" format="integer" />
+        <attr name="xBricks" format="integer" />
+        <attr name="yBricks" format="integer" />
     </declare-styleable>
 </resources>

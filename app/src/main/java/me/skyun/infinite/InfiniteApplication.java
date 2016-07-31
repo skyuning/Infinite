@@ -1,9 +1,12 @@
 package me.skyun.infinite;
 
 import android.app.Application;
+import android.graphics.Color;
 
 import com.raizlabs.android.dbflow.config.FlowManager;
 
+import jp.wasabeef.takt.Seat;
+import jp.wasabeef.takt.Takt;
 import me.skyun.infinite.global.Conf;
 import me.skyun.infinite.global.RetrofitUtils;
 import me.skyun.widget.ImageViewEx;
@@ -19,5 +22,13 @@ public class InfiniteApplication extends Application {
         ImageViewEx.setImageHost(Conf.IMAGE_HOST);
         FlowManager.init(this);
         RetrofitUtils.init(getApplicationContext(), Conf.sHost);
+
+        Takt.stock(this).play();
+    }
+
+    @Override
+    public void onTerminate() {
+        Takt.finish();
+        super.onTerminate();
     }
 }

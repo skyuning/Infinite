@@ -6,10 +6,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -27,18 +31,29 @@ import me.skyun.infinite.R;
  */
 public class MapView extends RelativeLayout {
 
-    public static final int PIXEL_PER_BRICK = 100; // 一个砖块对应100像素
+    public static final int INTRINSIC_BRICK_PIXELS = 100; // 一个砖块对应的像素数
 
+    private Matrix mMatrix = new Matrix();
     private boolean mIsEditingMap = false; // 地图编辑模式
     private Paint mFloorPaint;
-    private Paint mBrickPaint;
+    private int mTempColor = 0x88ff4080;
+    private Paint mTempPaint; // 用于画一些临时的,还未固定在Map上的item
     private BitmapShader mFloorShader;
     private GestureDetector mGestureDetector;
     private Rect mBounds;
     private Scroller mScroller;
     private ArrayList<MapItem> mMapItems = new ArrayList<>();
-    private Rect mCurRect;
+    private Rect mCurBrick;
     private ArrayList<Point> mSelectedBrick = new ArrayList<>();
+    private MapItem mCurItem;
+
+    public void setMapScale(float scale, float px, float py) {
+        mMatrix.setScale(scale, scale, px, py);
+    }
+
+    public void setCurItem(MapItem curItem) {
+        mCurItem = curItem;
+    }
 
     public boolean isEditingMap() {
         return mIsEditingMap;
@@ -47,7 +62,7 @@ public class MapView extends RelativeLayout {
     public void setEditingMap(boolean editingMap) {
         mIsEditingMap = editingMap;
         if (!mIsEditingMap) {
-            mCurRect = null;
+            mCurBrick = null;
         }
     }
 
@@ -73,8 +88,8 @@ public class MapView extends RelativeLayout {
     private void init(AttributeSet attrs) {
         TypedArray array = getContext().obtainStyledAttributes(attrs, R.styleable.MapView);
         int shaderRes = array.getResourceId(R.styleable.MapView_shader, 0);
-        int xSizePixel = array.getInt(R.styleable.MapView_xMeter, 0) * PIXEL_PER_BRICK;
-        int ySizePixel = array.getInt(R.styleable.MapView_yMeter, 0) * PIXEL_PER_BRICK;
+        int xSizePixel = array.getInt(R.styleable.MapView_xBricks, 0) * INTRINSIC_BRICK_PIXELS;
+        int ySizePixel = array.getInt(R.styleable.MapView_yBricks, 0) * INTRINSIC_BRICK_PIXELS;
         array.recycle();
 
         setWillNotDraw(false);
@@ -86,8 +101,8 @@ public class MapView extends RelativeLayout {
         mFloorPaint = new Paint();
         mFloorPaint.setShader(mFloorShader);
 
-        mBrickPaint = new Paint();
-        mBrickPaint.setColor(0x88ff4080);
+        mTempPaint = new Paint();
+        mTempPaint.setColor(mTempColor);
 
         mGestureDetector = new GestureDetector(getContext(), new MapGestureListener());
         mScroller = new Scroller(getContext());
@@ -96,67 +111,64 @@ public class MapView extends RelativeLayout {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
+        canvas.concat(mMatrix);
+
         Rect drawingRect = new Rect();
         getDrawingRect(drawingRect);
 
-        int brickOffsetLeft = drawingRect.left % PIXEL_PER_BRICK;
-        int brickOffsetTop = drawingRect.top % PIXEL_PER_BRICK;
-
-        Rect showingFloorRect = new Rect(drawingRect);
-
-        if (isEditingMap()) {
-            canvas.save();
-            canvas.translate(brickOffsetLeft, brickOffsetTop);
-            showingFloorRect.offset(-brickOffsetLeft, -brickOffsetTop);
-        }
-
-        if (!showingFloorRect.intersect(mBounds)) {
+        // draw floor
+        Rect floorRect = new Rect(drawingRect);
+        if (!floorRect.intersect(mBounds)) {
             return;
         }
 
-        // draw floor
-        canvas.drawRect(showingFloorRect, mFloorPaint);
-
-        // draw brick
-        if (mCurRect != null) {
-            canvas.drawRect(mCurRect, mBrickPaint);
-        }
+        canvas.drawRect(floorRect, mFloorPaint);
 
         // draw items
         for (MapItem item : mMapItems) {
             Rect itemRect = item.getRect();
-            if (Rect.intersects(itemRect, showingFloorRect)) { // item 在当前显示的floor范围内
-                Bitmap bitmap = item.getBitmap(getContext());
-                Rect bitmapRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-                if (mCurRect != null && itemRect.contains(mCurRect)) {
-                    canvas.drawBitmap(bitmap, bitmapRect, itemRect, mBrickPaint);
-                    mCurRect = itemRect;
+            if (Rect.intersects(itemRect, floorRect)) { // item 在当前显示的floor范围内
+                Drawable drawable = item.getDrawable(getContext());
+                if (mCurBrick != null && itemRect.contains(mCurBrick)) {
+                    drawable.setColorFilter(mTempColor, PorterDuff.Mode.LIGHTEN);
+                    mCurBrick = itemRect;
                 } else {
-                    canvas.drawBitmap(bitmap, bitmapRect, itemRect, null);
+                    drawable.setColorFilter(null);
                 }
+                drawable.setBounds(itemRect);
+                drawable.draw(canvas);
+
+                getMatrix().setRotate(30, 800, 800);
+                canvas.concat(getMatrix());
+                drawable.draw(canvas);
             }
         }
 
-        if (isEditingMap()) {
-            canvas.restore();
+        // draw cur item
+        if (mCurItem != null) {
+            Rect curItemShowingRect = new Rect(drawingRect);
+            curItemShowingRect.inset(drawingRect.width() / 2, drawingRect.height() / 2);
+            Rect curItemRawRect = mCurItem.getRect();
+            curItemShowingRect.inset(-curItemRawRect.width() / 2, -curItemRawRect.height() / 2);
+            Drawable curItemDrawable = mCurItem.getDrawable(getContext());
+            curItemDrawable.setBounds(curItemShowingRect);
+            curItemDrawable.draw(canvas);
+        }
+
+        // draw brick
+        if (mCurBrick != null) {
+            canvas.drawRect(mCurBrick, mTempPaint);
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        mScroller.forceFinished(true);
         mGestureDetector.onTouchEvent(event);
         return true;
     }
 
     private class MapGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public void onShowPress(MotionEvent e) {
-            if (!mIsEditingMap) {
-                return;
-            }
-            setCurRect(e);
-        }
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
@@ -168,18 +180,44 @@ public class MapView extends RelativeLayout {
         }
 
         private void setCurRect(MotionEvent e) {
-            int x = (int) e.getX() + getScrollX();
-            int y = (int) e.getY() + getScrollY();
-            x -= x % PIXEL_PER_BRICK;
-            y -= y % PIXEL_PER_BRICK;
-            mCurRect = new Rect(x, y, x + PIXEL_PER_BRICK, y + PIXEL_PER_BRICK);
+            float[] transformedPoint = new float[]{e.getX() + getScrollX(), e.getY() + getScrollY()};
+            Matrix invertMatrix = new Matrix();
+            mMatrix.invert(invertMatrix);
+
+            float[] rawPoint = new float[2];
+            invertMatrix.mapPoints(rawPoint, transformedPoint);
+
+            rawPoint[0] -= rawPoint[0] % INTRINSIC_BRICK_PIXELS;
+            rawPoint[1] -= rawPoint[1] % INTRINSIC_BRICK_PIXELS;
+            if (rawPoint[0] < 0) {
+                rawPoint[0] -= INTRINSIC_BRICK_PIXELS;
+            }
+            if (rawPoint[1] < 0) {
+                rawPoint[1] -= INTRINSIC_BRICK_PIXELS;
+            }
+            mCurBrick = new Rect(0, 0, INTRINSIC_BRICK_PIXELS, INTRINSIC_BRICK_PIXELS);
+            mCurBrick.offset((int) rawPoint[0], (int) rawPoint[1]);
+
             playSoundEffect(SoundEffectConstants.CLICK);
+
+            invalidate();
         }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            scrollBy((int) distanceX, (int) distanceY);
-            return true;
+            RectF transformedBound = new RectF(mBounds);
+            mMatrix.mapRect(transformedBound);
+
+            Rect drawingRect = new Rect();
+            getDrawingRect(drawingRect);
+            drawingRect.offset((int) distanceX, (int) distanceY);
+
+            // 先简单处理,只要滚动后Map的中心点还在transformedBounds之内,就还可以滚动,否则就不能滚动了
+            if (transformedBound.contains(drawingRect.centerX(), drawingRect.centerY())) {
+                scrollBy((int) distanceX, (int) distanceY);
+                return true;
+            }
+            return false;
         }
 
         @Override
@@ -194,14 +232,11 @@ public class MapView extends RelativeLayout {
 
     @Override
     public void computeScroll() {
-        int x, y;
-        if (mScroller.computeScrollOffset()) {
-            x = mScroller.getCurrX();
-            y = mScroller.getCurrY();
-        } else {
-            x = getScrollX();
-            y = getScrollY();
+        if (!mScroller.computeScrollOffset()) {
+            return;
         }
+        int x = mScroller.getCurrX();
+        int y = mScroller.getCurrY();
 
         Rect scrollBound = new Rect(mBounds); // 可以scroll的范围
         scrollBound.offset(-getWidth() / 2, -getHeight() / 2);

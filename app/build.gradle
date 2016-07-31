@@ -6,7 +6,7 @@ android {
     buildToolsVersion '23.0.3'
     defaultConfig {
         applicationId "me.skyun.infinite"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -39,6 +39,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
     compile 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
+    compile 'jp.wasabeef:takt:1.0.2'
 }
 
 // DBFlow(ORM)

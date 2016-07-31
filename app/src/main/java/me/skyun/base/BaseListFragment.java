@@ -43,6 +43,11 @@ public abstract class BaseListFragment<ITEM, RESULT> extends DialogFragment impl
     private BaseArrayAdapter<ITEM> mAdapter;
     protected StatusManager mStatusManager;
     private boolean mAutoStartLoading = true;
+    private AdapterView.OnItemClickListener mOnItemClickListener;
+
+    public void setOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
+    }
 
     public ListView getListView() {
         return mListView;
@@ -94,6 +99,9 @@ public abstract class BaseListFragment<ITEM, RESULT> extends DialogFragment impl
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (mOnItemClickListener != null) {
+            mOnItemClickListener.onItemClick(parent, view, position, id);
+        }
     }
 
     @Override

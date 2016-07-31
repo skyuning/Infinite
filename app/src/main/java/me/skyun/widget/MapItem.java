@@ -1,10 +1,7 @@
 package me.skyun.widget;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 /**
@@ -18,6 +15,11 @@ public class MapItem {
     public MapItem(int resId, Rect rect) {
         mResId = resId;
         mRect = rect;
+    }
+
+    public MapItem(int resId, int width, int height) {
+        mResId = resId;
+        mRect = new Rect(0, 0, width, height);
     }
 
     public int getResId() {
@@ -36,9 +38,12 @@ public class MapItem {
         mRect = rect;
     }
 
-    public Bitmap getBitmap(Context context) {
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), mResId);
-        BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(), bitmap);
-        return bitmap;
+    public Drawable getDrawable(Context context) {
+        return context.getResources().getDrawable(mResId);
+    }
+
+    public Rect getDrawableRect(Context context) {
+        Drawable drawable = getDrawable(context);
+        return new Rect(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
     }
 }
