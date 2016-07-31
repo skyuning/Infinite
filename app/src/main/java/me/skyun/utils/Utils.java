@@ -1,6 +1,7 @@
 package me.skyun.utils;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -62,5 +63,11 @@ public class Utils {
         } else {
             return false;
         }
+    }
+
+    public static Matrix getInvertMatrix(Matrix matrix) {
+        Matrix invertMatrix = new Matrix();
+        matrix.invert(invertMatrix);
+        return invertMatrix;
     }
 }

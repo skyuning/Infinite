@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SoundEffectConstants;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import me.skyun.infinite.R;
+import me.skyun.utils.Utils;
 
 /**
  * Created by linyun on 16/7/29.
@@ -40,6 +42,8 @@ public class MapView extends RelativeLayout {
     private Paint mTempPaint; // 用于画一些临时的,还未固定在Map上的item
     private BitmapShader mFloorShader;
     private GestureDetector mGestureDetector;
+    private GestureDetector.SimpleOnGestureListener mOnGestureListener;
+    private ScaleGestureDetector mScaleGestureDetector;
     private Rect mBounds;
     private Scroller mScroller;
     private ArrayList<MapItem> mMapItems = new ArrayList<>();
@@ -104,7 +108,9 @@ public class MapView extends RelativeLayout {
         mTempPaint = new Paint();
         mTempPaint.setColor(mTempColor);
 
-        mGestureDetector = new GestureDetector(getContext(), new MapGestureListener());
+        mOnGestureListener = new MapGestureListener();
+        mGestureDetector = new GestureDetector(getContext(), mOnGestureListener);
+        mScaleGestureDetector = new ScaleGestureDetector(getContext(), new MapScaleListener());
         mScroller = new Scroller(getContext());
     }
 
@@ -113,23 +119,26 @@ public class MapView extends RelativeLayout {
         super.draw(canvas);
         canvas.concat(mMatrix);
 
+        // draw floor
         Rect drawingRect = new Rect();
         getDrawingRect(drawingRect);
 
-        // draw floor
-        Rect floorRect = new Rect(drawingRect);
-        if (!floorRect.intersect(mBounds)) {
+        RectF rawShowingRect = new RectF(drawingRect);
+        Utils.getInvertMatrix(mMatrix).mapRect(rawShowingRect);
+        if (!rawShowingRect.intersect(new RectF(mBounds))) {
             return;
         }
 
-        canvas.drawRect(floorRect, mFloorPaint);
+        Rect rawFloorClip = new Rect();
+        rawShowingRect.roundOut(rawFloorClip);
+        canvas.drawRect(rawFloorClip, mFloorPaint);
 
         // draw items
         for (MapItem item : mMapItems) {
             Rect itemRect = item.getRect();
-            if (Rect.intersects(itemRect, floorRect)) { // item 在当前显示的floor范围内
+            if (Rect.intersects(itemRect, rawFloorClip)) { // item 在当前显示的floor范围内
                 Drawable drawable = item.getDrawable(getContext());
-                if (mCurBrick != null && itemRect.contains(mCurBrick)) {
+                if (mCurBrick != null && Rect.intersects(itemRect, mCurBrick)) {
                     drawable.setColorFilter(mTempColor, PorterDuff.Mode.LIGHTEN);
                     mCurBrick = itemRect;
                 } else {
@@ -165,6 +174,7 @@ public class MapView extends RelativeLayout {
     public boolean onTouchEvent(MotionEvent event) {
         mScroller.forceFinished(true);
         mGestureDetector.onTouchEvent(event);
+        mScaleGestureDetector.onTouchEvent(event);
         return true;
     }
 
@@ -181,11 +191,8 @@ public class MapView extends RelativeLayout {
 
         private void setCurRect(MotionEvent e) {
             float[] transformedPoint = new float[]{e.getX() + getScrollX(), e.getY() + getScrollY()};
-            Matrix invertMatrix = new Matrix();
-            mMatrix.invert(invertMatrix);
-
             float[] rawPoint = new float[2];
-            invertMatrix.mapPoints(rawPoint, transformedPoint);
+            Utils.getInvertMatrix(mMatrix).mapPoints(rawPoint, transformedPoint);
 
             rawPoint[0] -= rawPoint[0] % INTRINSIC_BRICK_PIXELS;
             rawPoint[1] -= rawPoint[1] % INTRINSIC_BRICK_PIXELS;
@@ -210,14 +217,25 @@ public class MapView extends RelativeLayout {
 
             Rect drawingRect = new Rect();
             getDrawingRect(drawingRect);
-            drawingRect.offset((int) distanceX, (int) distanceY);
+            RectF insetDrawingRect = new RectF(drawingRect);
+            insetDrawingRect.inset(300, 300);
 
-            // 先简单处理,只要滚动后Map的中心点还在transformedBounds之内,就还可以滚动,否则就不能滚动了
-            if (transformedBound.contains(drawingRect.centerX(), drawingRect.centerY())) {
+            if (distanceX > 0 && insetDrawingRect.left + distanceX > transformedBound.right) {
+                distanceX = transformedBound.right - insetDrawingRect.left;
+            } else if (distanceX < 0 && insetDrawingRect.right + distanceX < transformedBound.left) {
+                distanceX = transformedBound.left - insetDrawingRect.right;
+            }
+            if (distanceY > 0 && insetDrawingRect.top + distanceY > transformedBound.bottom) {
+                distanceY = transformedBound.bottom - insetDrawingRect.top;
+            } else if (distanceY < 0 && insetDrawingRect.bottom + distanceY < transformedBound.top) {
+                distanceY = transformedBound.top - insetDrawingRect.bottom;
+            }
+            if (distanceX == 0 && distanceY == 0) {
+                return false;
+            } else {
                 scrollBy((int) distanceX, (int) distanceY);
                 return true;
             }
-            return false;
         }
 
         @Override
@@ -230,30 +248,42 @@ public class MapView extends RelativeLayout {
         }
     }
 
+    private class MapScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            float scale = detector.getScaleFactor();
+            mMatrix.postScale(scale, scale);
+            return true;
+        }
+    }
+
     @Override
     public void computeScroll() {
         if (!mScroller.computeScrollOffset()) {
             return;
         }
-        int x = mScroller.getCurrX();
-        int y = mScroller.getCurrY();
-
-        Rect scrollBound = new Rect(mBounds); // 可以scroll的范围
-        scrollBound.offset(-getWidth() / 2, -getHeight() / 2);
-
-        if (x < scrollBound.left) {
-            x = scrollBound.left;
-        } else if (x > scrollBound.right) {
-            x = scrollBound.right;
+        int dx = mScroller.getCurrX() - getScrollX();
+        int dy = mScroller.getCurrY() - getScrollY();
+        if (!mOnGestureListener.onScroll(null, null, dx, dy)) {
+            mScroller.forceFinished(true);
         }
-        if (y < scrollBound.top) {
-            y = scrollBound.top;
-        } else if (y > scrollBound.bottom) {
-            y = scrollBound.bottom;
-        }
-        scrollTo(x, y);
 
-        invalidate();
+//        Rect scrollBound = new Rect(mBounds); // 可以scroll的范围
+//        scrollBound.offset(-getWidth() / 2, -getHeight() / 2);
+//
+//        if (x < scrollBound.left) {
+//            x = scrollBound.left;
+//        } else if (x > scrollBound.right) {
+//            x = scrollBound.right;
+//        }
+//        if (y < scrollBound.top) {
+//            y = scrollBound.top;
+//        } else if (y > scrollBound.bottom) {
+//            y = scrollBound.bottom;
+//        }
+//        scrollTo(x, y);
+//
+//        invalidate();
     }
 }
 
