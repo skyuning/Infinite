@@ -126,7 +126,7 @@ public class MapView extends RelativeLayout {
 
     @Override
     public void draw(Canvas canvas) {
-        super.draw(canvas);
+//        super.draw(canvas);
         canvas.concat(mMatrix);
 
         // draw floor
@@ -225,6 +225,9 @@ public class MapView extends RelativeLayout {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            distanceX /= 3;
+            distanceY /= 3;
+
             RectF transformedBound = new RectF(mBounds);
             mMatrix.mapRect(transformedBound);
 
